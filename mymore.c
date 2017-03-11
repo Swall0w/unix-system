@@ -30,4 +30,25 @@ void do_more(FILE *fp)
  *  PAGELEN行の情報を読み込み、see_more()を呼び出して命令を待つ。
  */
 {
+    char    line[LINELEN];
+    int     num_of_lines = 0;
+    int     see_more(), reply;
+    
+    while( fgets(line, LINELEN, fp)){   /* 入力がまだある。 */
+        if(num_of_lines == PAGELEN){    /* 画面いっぱいに？ */
+            reply = see_more();         /* y:指示待ち       */
+            if(reply == 0)              /* n:終了           */
+                break;
+            num_of_lines -= reply;      /* カウンタをリセット*/
+        }
+        if(fputs(line, stdout) == EOF ) /* 行を表示する     */
+            exit(1);                    /* または終了する。 */
+        num_of_lines++;
+    }
 }
+
+int see_more()
+/*
+ *      メッセージを出力して応答を待つ。先に進める行数を返す。
+ *      qならノー、スペースならイエス、CRなら1行
+ */
