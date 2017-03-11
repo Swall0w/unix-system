@@ -3,6 +3,8 @@
  */
 
 #include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
 #define PAGELEN 24
 #define LINELEN 512
 
@@ -11,17 +13,19 @@ int see_more();
 
 int main(int ac, char *av[]){
     FILE *fp;
-    if( ac == 1 )
+    if( ac == 1 ){
         do_more( stdin );
-    else
-        while( --ac )
-            if((fp = fopen(*++av, 'r')) != NULL)
-            {
+    }else{
+        while( --ac ){
+            if((fp = fopen(*++av, "r")) != NULL){
+            // don't use 'r' beacuse it's parsed as int type.
                 do_more(fp);
                 fclose(fp);
-            }
-            else
+            }else{
                 exit(1);
+            }
+        }
+    }
     return  0;
 }
 
@@ -52,3 +56,17 @@ int see_more()
  *      メッセージを出力して応答を待つ。先に進める行数を返す。
  *      qならノー、スペースならイエス、CRなら1行
  */
+ {
+    int    c;
+    printf("\033[7m more? \033[m");
+    while((c=getchar()) != EOF)
+    {
+       if(c == 'q')
+           return 0;
+       if(c == ' ')
+           return PAGELEN;
+       if(c == '\n')
+           return 1;
+    }
+    return 0;
+}
